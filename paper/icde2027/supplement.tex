@@ -1,0 +1,140 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{newtxtext,newtxmath}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle={QuaRM: Supplementary Material and Artifact Guide},
+  pdfauthor={AUTHOR METADATA REQUIRED BEFORE SUBMISSION},
+  pdfsubject={Supplement to an ICDE 2027 regular research submission},
+  pdfkeywords={data quality, artifact, reproducibility, Shapley value}
+}
+
+\graphicspath{{../../artifacts/icde_figures/}{../../artifacts/figures/}}
+\input{generated_results.tex}
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[#1]}}}
+
+\title{QuaRM: Accounting for Data-Quality Debt Across\\
+Interacting Defects and Analytical Workloads\\
+{\large Supplementary Material and Artifact Guide}}
+
+\author{\IEEEauthorblockN{\TODO{AUTHOR NAMES REQUIRED---SINGLE-BLIND SUBMISSION}}
+\IEEEauthorblockA{\TODO{Affiliations, emails, and ORCIDs required before submission}}}
+
+\begin{document}
+\maketitle
+
+This supplement expands the experimental record for the ICDE 2027 submission. It is not an appendix to the 12-page paper and contains no claim required to understand the main argument. Every table is generated directly from the checked-in result CSVs by \texttt{scripts/make\_icde\_paper\_assets.py}.
+
+\section{Artifact map}
+
+The public release must expose the following structure:
+
+\begin{itemize}
+  \item \texttt{src/quarm}: exact attribution, sampling, ML, and relational backends;
+  \item \texttt{experiments}: frozen study drivers and paired-design ablation;
+  \item \texttt{artifacts/icde\_results}: raw coalition observations, allocations, interactions, query allocations, scale, sampling, and SHA-256 manifests;
+  \item \texttt{artifacts/results}: ML confirmation evidence and manifest;
+  \item \texttt{paper/icde2027}: IEEEtran sources and generated evidence tables;
+  \item \texttt{tests}: deterministic unit and integration tests; and
+  \item \texttt{scripts}: official-data fetcher, asset generator, PDF QA, and submission audit.
+\end{itemize}
+
+Raw NYC inputs are not duplicated in the repository. \texttt{scripts/fetch\_public\_data.py} downloads them from the official TLC endpoint and rejects files whose hashes differ from the frozen January 2025 snapshot.
+
+\section{Mechanisms and query workload}
+
+\begin{table*}[t]
+\caption{Relational experimental contract. All selected units are deterministic functions of the master seed, repeat, and mechanism name.}
+\label{tab:contract}
+\centering\small\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lll}
+\toprule
+Mechanism & unit selected at severity $\theta$ & transformation \\
+\midrule
+missing measures & monetary fact cells & replace with SQL NULL \\
+value noise & monetary fact cells & multiply by a stochastic scale perturbation \\
+orphan foreign keys & fact foreign-key cells & replace with an absent identifier \\
+stale timestamps & fact event times & shift backward according to the fixed operator \\
+dimension drift & selected dimension members & replace the analytical category/region label \\
+duplicate facts & fact rows & append exact row copies after value-level mechanisms \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The eight workload templates are: average order value by customer segment; customer count by region; daily revenue; order count by status; refund rate by region; revenue by product category; monthly revenue; and revenue by region. Each answer is aligned on group keys with absent groups filled by zero. The loss is clipped normalized $L_1$ error, and workload loss is the unweighted mean. Query-level allocations are retained in \texttt{query\_attributions.csv} and \texttt{nyc\_query\_attributions.csv}.
+
+\section{Complete relational results}
+
+\input{generated_supplement_tables.tex}
+
+Exact Shapley efficiency residual is zero for every relational population. The normalized Banzhaf residuals are $-1.89$ risk points for NYC and between $-1.40$ and $-1.56$ for the generated references. The largest absolute pairwise interactions are 5.62 (NYC), 5.87 (Uniform), 5.69 (Skewed), and 5.90 (Seasonal) points. In all four, missing measures and duplicate facts form the largest-magnitude pair.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.94\textwidth]{icde_figure4_accounting_decision.pdf}
+\caption{The complete accounting/intervention comparison. The underlying coalition means and every full-context marginal are available in the raw observations.}
+\end{figure*}
+
+\section{Scale and estimator details}
+
+\input{generated_sampling_table.tex}
+
+The exact row-scale experiment performs 64 coalition materializations and 512 SQL query executions per size. Wall times are 9.55~s at 10K facts, 22.17~s at 100K, and 97.22~s at 1M. These values include Python intervention, DuckDB ingestion, query evaluation, and answer comparison. They were collected on the environment recorded in \texttt{artifacts/icde\_results/manifest.json}.
+
+For permutation sampling, each random order visits $m+1$ prefixes. A process-local cache ensures a coalition is evaluated at most once. The result object records sample count, marginal matrix, standard errors, exact coalition count, unique coalition count, and the simultaneous Hoeffding radius. The controlled surface contains unequal main effects, eight pair interactions, and three triple interactions followed by a logistic map; all 4,096 losses are therefore in $(0,1)$ and available for exact ground truth.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{icde_figure4_sampling_m12.pdf}
+\caption{Estimator convergence and actual coalition coverage for the 12-mechanism study.}
+\end{figure}
+
+\section{ML confirmation}
+
+The ML study follows the same paired-coalition contract with four mechanisms: missing cells, numeric feature noise, target noise, and duplicate rows. Every setting evaluates all 16 coalitions for 12 paired train/test splits. Seven of eight aggregate debts are positive; the nonlinear-synthetic/logistic setting is negative because feature noise acts as regularization for the fixed misspecified learner. This signed case is retained rather than clipped.
+
+\section{Reproduction protocol}
+
+On Windows PowerShell, after creating the environment and installing the project:
+
+{\scriptsize
+\begin{verbatim}
+.venv\Scripts\python.exe -m pytest
+.venv\Scripts\python.exe scripts\fetch_public_data.py
+.venv\Scripts\python.exe experiments\run_study.py
+.venv\Scripts\python.exe experiments\run_icde_study.py
+.venv\Scripts\python.exe experiments\run_icde_real.py
+.venv\Scripts\python.exe experiments\run_sampling_scalability.py
+.venv\Scripts\python.exe experiments\analyze_paired_design.py
+.venv\Scripts\python.exe scripts\make_icde_paper_assets.py
+\end{verbatim}
+}
+
+The expensive full relational study requires approximately 15 minutes on the recorded laptop-class environment; the exact NYC study requires approximately four minutes. The public release should preserve the evidence CSVs so reviewers can regenerate all manuscript tables and figures without rerunning expensive workloads, then selectively reproduce any study.
+
+\section{Artifact claims and checks}
+
+The artifact supports the following independently checkable claims:
+
+\begin{enumerate}
+  \item all exact games contain every coalition exactly once per repeat;
+  \item Shapley allocations close aggregate debt to floating-point precision;
+  \item identical master seeds replay identical corruption selections and losses;
+  \item a mechanism's random realization is invariant to coalition membership;
+  \item the NYC inputs match pinned hashes from the official source;
+  \item every paper number is generated from machine-readable evidence;
+  \item every final PDF page is rendered and checked for page-bound violations; and
+  \item the wheel, source distribution, tests, and paper sources are included in the release manifest.
+\end{enumerate}
+
+The release should be assigned a DOI or immutable repository tag before submission. A mutable branch URL is insufficient for archival review.
+
+\section*{Acknowledgment of AI-Generated Content}
+OpenAI Codex was used to generate and revise portions of the Python implementation, experimental orchestration, figures, supplementary material, and manuscript text. Before submission, the listed authors must independently inspect the source, reproduce the evidence, verify the claims, and accept responsibility for the complete work. No AI system is an author.
+
+\end{document}

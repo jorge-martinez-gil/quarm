@@ -1,0 +1,2 @@
+regime,orders,customers,products,queries,coalitions,repeats,wall_seconds,full_risk,total_debt,shapley_residual,banzhaf_residual,max_abs_interaction,top_channel,top_probability,shapley_choice,singleton_choice,oracle_choice,shapley_gain,singleton_gain,uniform_gain,oracle_gain
+nyc_taxi,100000,265,7,8,64,12,246.57216219999827,0.19203776551448862,0.19203776551448862,0.0,-0.018921408350078023,0.05615073697300066,dimension_drift,1.0,dimension_drift,dimension_drift,dimension_drift,0.08109897449601874,0.08109897449601874,0.013757337939004544,0.08109897449601874

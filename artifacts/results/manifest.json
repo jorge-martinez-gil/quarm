@@ -1,0 +1,38 @@
+{
+  "configuration": {
+    "bootstrap": 2000,
+    "dose_repeats": 8,
+    "repeats": 12,
+    "seed": 20260807,
+    "severity": 0.15
+  },
+  "design": {
+    "coalitions_per_setting": 16,
+    "corruption_streams": "SHA-256-derived channel-specific seeds invariant to coalition membership",
+    "loss": "classification error or clipped IQR-normalized absolute regression error, both in [0,1]",
+    "pairing": "same split and model seed across every coalition within a repeat",
+    "test_distribution": "clean held-out 30% split"
+  },
+  "environment": {
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.13 (main, Mar  3 2026, 15:01:35) [MSC v.1944 64 bit (AMD64)]",
+    "scikit_learn": "1.9.0"
+  },
+  "files": {
+    "artifacts/figures/figure2_attributions.png": "5ff7f9fab54da029f366272c2ebd54d88a371f7c40783d8e59c6b0c256930765",
+    "artifacts/figures/figure3_interactions.png": "bae4afb07cd8bfb68a4576c97ee7d8f32c645660a39a4c0f9f215e2546b40add",
+    "artifacts/figures/figure4_dose_response.png": "a1527272c7d562e1634f00230d3032d9301635f7b5179b02b7583982539cc92e",
+    "artifacts/results/attributions.csv": "2c1515f5e849370f15ef3e789711890131f1ab87723f9b342725e74dc96c870d",
+    "artifacts/results/coalition_observations.csv": "dc854c68e0b9b1d4a22dcb5776cacc236c1c5e74250b19873040e187a5f77f01",
+    "artifacts/results/dose_response.csv": "5e49bbd4b880bcb4d768255f59d79a52ab2e2922b011160097fd547ac49c18f6",
+    "artifacts/results/interactions.csv": "132c1e56b1ec131f73e1b677b2821f7461da6c55b09f6fcea863a4186d44172c",
+    "artifacts/results/study_summary.csv": "fb0307ad98dd2ae10e63da0c0ad4153b47e5844b297a225045e81ade4f643af5"
+  },
+  "generated_utc": "2026-08-07T06:22:22.367883+00:00",
+  "git_revision": "unversioned-workspace",
+  "runtime_seconds": 269.2864750000008,
+  "study": "QuaRM full-factorial quality-debt benchmark"
+}

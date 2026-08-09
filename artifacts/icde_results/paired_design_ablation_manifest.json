@@ -1,0 +1,15 @@
+{
+  "configuration": {
+    "draws": 2000,
+    "seed": 20270807
+  },
+  "files": {
+    "artifacts/icde_results/paired_design_ablation.csv": "97e74f724e2e08b0339f56936737ff4ea53c0ec461654009cc0bafdb97fa0a20"
+  },
+  "interpretation": "ratio below one means repeat-level pairing narrows the 95% Shapley interval under the resampled design",
+  "source": [
+    "relational_observations.csv",
+    "nyc_observations.csv"
+  ],
+  "study": "QuaRM paired-versus-independent bootstrap design ablation"
+}

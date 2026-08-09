@@ -1,0 +1,56 @@
+{
+  "configuration": {
+    "bootstrap": 2000,
+    "orders": 100000,
+    "repeats": 12,
+    "sampling_trials": 200,
+    "scale_max": 1000000,
+    "seed": 20270807,
+    "severity": 0.1
+  },
+  "design": {
+    "channels": [
+      "missing_measures",
+      "value_noise",
+      "orphan_foreign_keys",
+      "stale_timestamps",
+      "dimension_drift",
+      "duplicate_facts"
+    ],
+    "loss": "mean bounded normalized-L1 query-answer error",
+    "pairing": "channel-specific SHA-256 random streams shared across coalitions by repeat",
+    "relations": [
+      "customers",
+      "products",
+      "orders"
+    ],
+    "workload_queries": 8
+  },
+  "environment": {
+    "duckdb": "1.5.5",
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.1",
+    "pandas": "3.0.5",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.13"
+  },
+  "files": {
+    "artifacts/icde_figures/icde_figure2_relational_attributions.pdf": "178e16e8f6ae417f28f73a4e91b246c517fc2156b06a99335b50f878be2b4bc3",
+    "artifacts/icde_figures/icde_figure2_relational_attributions.png": "71c47d01bc55e5cfc59cc96151c32698d937748c63f1c0f35ebde09a374b4e42",
+    "artifacts/icde_figures/icde_figure3_query_profiles.pdf": "25a458c4cdab08a63d0a38054d8616c2bf40fdd6f90952919ee46e9fda5358dd",
+    "artifacts/icde_figures/icde_figure3_query_profiles.png": "6cb16810ce990e145700794dbd0de84e2324fb177e99dbbb551d505d31cf0bc2",
+    "artifacts/icde_figures/icde_figure4_sampling.pdf": "8b3d58091fe89affd32cbb2b888566e90285f26e07707cebc16b20d47eb78d93",
+    "artifacts/icde_figures/icde_figure4_sampling.png": "8576975bce9f8b388c1be7af24f1a62ce6926b30e14839102f739c126473dc36",
+    "artifacts/icde_figures/icde_figure5_scale.pdf": "7a8c0eb40ac76632a83b17bc8279e8722e44392e5e2805c0fe365988443151c7",
+    "artifacts/icde_figures/icde_figure5_scale.png": "90e69ad5c2346fa150bfe8a50a77392254e2ddfde60ddae70bc361201e369cd8",
+    "artifacts/icde_results/query_attributions.csv": "c63a601ff37fd27f3ed8528ae4de5f5b0d0ed40a63b5ab156b73cc5b322408a4",
+    "artifacts/icde_results/relational_attributions.csv": "27f584d1c8141d49db7510261c7e6801b6d75c96459f648b35f5cc81fd61f5ae",
+    "artifacts/icde_results/relational_interactions.csv": "5ec0a91e7a0e7fd1f2b95bf57444b03eed622a6cb4e9b673e4f3c117fea52139",
+    "artifacts/icde_results/relational_observations.csv": "61c56832179f132a51b0114c4b7b127bc2f1341e978c56bb4284c1ab2196a742",
+    "artifacts/icde_results/relational_summary.csv": "7dcc70e0477eb931f3e01442dd5ee4738ef2aa6d96cb71fd7c9722ccee634470",
+    "artifacts/icde_results/sampling_convergence.csv": "3850e1422e94be0e3f6db2661f88319aeb50328a03ca18c1ccf2cdefe44db6c6",
+    "artifacts/icde_results/scale.csv": "cb431a869c5f777bebf6a0664cbb3bb962fc0c084ce6a71222c809ee2908a862"
+  },
+  "runtime_seconds": 901.255459500011,
+  "study": "QuaRM ICDE 2027 relational and approximation study"
+}

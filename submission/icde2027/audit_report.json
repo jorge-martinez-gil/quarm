@@ -1,0 +1,83 @@
+{
+  "checks": [
+    {
+      "tests_exit_code": 0
+    }
+  ],
+  "cmt_scope_characters": 744,
+  "errors": [],
+  "generated_utc": "2026-08-07T08:15:00.913800+00:00",
+  "main_pdf": {
+    "blockers": [
+      "author metadata placeholder remains",
+      "public artifact URL placeholder remains"
+    ],
+    "bytes": 216547,
+    "content_pages_before_references": 9,
+    "errors": [],
+    "exists": true,
+    "font_count": 13,
+    "fonts_embedded": true,
+    "letter_pages": true,
+    "out_of_bounds": 0,
+    "pages": 9,
+    "sha256": "de468bd6282bcb5b476d912d808288b32d313fd34c0a8840c616232dbaa84daf"
+  },
+  "manifests": [
+    {
+      "manifest": "artifacts/results/manifest.json",
+      "mismatches": []
+    },
+    {
+      "manifest": "artifacts/icde_results/manifest.json",
+      "mismatches": []
+    },
+    {
+      "manifest": "artifacts/icde_results/nyc_manifest.json",
+      "mismatches": []
+    },
+    {
+      "manifest": "artifacts/icde_results/sampling_scalability_m12_manifest.json",
+      "mismatches": []
+    },
+    {
+      "manifest": "artifacts/icde_results/paired_design_ablation_manifest.json",
+      "mismatches": []
+    }
+  ],
+  "nyc_inputs": [
+    {
+      "actual": "9af277e4c0d3f9deb30644da822981e1e7df6af58313170fd3aa8a474485488a",
+      "expected": "9af277e4c0d3f9deb30644da822981e1e7df6af58313170fd3aa8a474485488a",
+      "file": "data/raw/yellow_tripdata_2025-01.parquet",
+      "match": true
+    },
+    {
+      "actual": "1a99e105092230f8620f301edcca7f80d3080642ff404d28ed957d3fa222c8ed",
+      "expected": "1a99e105092230f8620f301edcca7f80d3080642ff404d28ed957d3fa222c8ed",
+      "file": "data/raw/taxi_zone_lookup.csv",
+      "match": true
+    }
+  ],
+  "status": "blocked_on_submission_metadata",
+  "submission_blockers": [
+    "author metadata placeholder remains",
+    "author_metadata.yaml remains incomplete",
+    "public artifact URL placeholder remains"
+  ],
+  "supplement_pdf": {
+    "blockers": [
+      "author metadata placeholder remains"
+    ],
+    "bytes": 75168,
+    "content_pages_before_references": null,
+    "errors": [],
+    "exists": true,
+    "font_count": 7,
+    "fonts_embedded": true,
+    "letter_pages": true,
+    "out_of_bounds": 0,
+    "pages": 4,
+    "sha256": "76bfbabdf0995eca04d7d76d1bec3bad6eab1be21a149c6cfb12249fce984117"
+  }
+}

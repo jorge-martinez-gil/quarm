@@ -1,0 +1,26 @@
+{
+  "configuration": {
+    "bootstrap": 2000,
+    "orders": 100000,
+    "repeats": 12,
+    "seed": 20270807,
+    "severity": 0.1
+  },
+  "dataset": {
+    "name": "NYC TLC Yellow Taxi Trip Records, January 2025",
+    "parquet_sha256": "9af277e4c0d3f9deb30644da822981e1e7df6af58313170fd3aa8a474485488a",
+    "reference_status": "real observed snapshot used as a controlled susceptibility reference; not asserted clean",
+    "source": "https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page",
+    "zone_lookup_sha256": "1a99e105092230f8620f301edcca7f80d3080642ff404d28ed957d3fa222c8ed"
+  },
+  "files": {
+    "artifacts/icde_figures/icde_figure2_all_relational_attributions.pdf": "9eaf890cb2d263fbd25ed52caeb7bb240c689747944c2b6c95cf80dfd9b51f67",
+    "artifacts/icde_figures/icde_figure2_all_relational_attributions.png": "944715430b432253955ae6443c167374610d2afd2cc9237ff655d9c87f313c3a",
+    "artifacts/icde_results/nyc_attributions.csv": "c43ef71765d905aeffa7b55206ef276ff246bdc499966f4c44f2ace6f4cb62b4",
+    "artifacts/icde_results/nyc_interactions.csv": "403214469e2428a15ba120838b34a7135d379f9b45c631d754b05d15212a6c16",
+    "artifacts/icde_results/nyc_observations.csv": "ab0702e55c54a4139f057bfc0b5cfa0873bae87721335a197cece2c7b947a144",
+    "artifacts/icde_results/nyc_query_attributions.csv": "614ee8b25d8563baa6b3149dcf2bb2e9eb5cc395b614bcc764b248b11dd4653f",
+    "artifacts/icde_results/nyc_summary.csv": "5c77c0ba3bb2202045ffe3188f70a62c778e60df69c25b6eff7c366bf854a7d5"
+  },
+  "runtime_seconds": 246.57216219999827
+}

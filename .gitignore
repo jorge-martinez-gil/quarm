@@ -1,0 +1,14 @@
+.venv/
+.uv-cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+data/raw/
+tools/tectonic/cache/
+tools/tectonic/tectonic.exe
+tools/tectonic/tectonic.zip
+tmp/pdfs/*.png
+tmp/pdfs/*.ppm

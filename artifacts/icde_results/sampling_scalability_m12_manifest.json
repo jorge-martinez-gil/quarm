@@ -1,0 +1,20 @@
+{
+  "configuration": {
+    "seed": 20270807,
+    "trials": 400
+  },
+  "design": {
+    "channels": 12,
+    "exact_coalitions": 4096,
+    "ground_truth": "exact Shapley allocation over all coalitions",
+    "surface": "bounded logistic sparse polynomial with eight pair and three triple interactions"
+  },
+  "files": {
+    "artifacts/icde_figures/icde_figure4_sampling_m12.pdf": "8e1d634b648167cf2f893c112e6c6dfc2f05bab8e648c674d74bc58100652e86",
+    "artifacts/icde_figures/icde_figure4_sampling_m12.png": "084d2c8ce14cc7051c81f0cf9472de0edacac3dfeacf2af06cfc4e4189fcd7b0",
+    "artifacts/icde_results/sampling_exact_m12.csv": "fd56ddc896694388f69a37c9c25c965110173907a572dddb543b0473d9840617",
+    "artifacts/icde_results/sampling_scalability_m12.csv": "2ee28e0bceb79a5f950b780f0c04780913796ce8e87cd79b5abc5e794730ae65",
+    "artifacts/icde_results/sampling_surface_m12.csv": "43fd00cfd793ec5e925c8a2942a354cd4befe3044c6474c2b3c17d8678163077"
+  },
+  "study": "QuaRM controlled 12-mechanism permutation scalability"
+}

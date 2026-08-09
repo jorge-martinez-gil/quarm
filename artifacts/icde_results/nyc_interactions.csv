@@ -1,0 +1,16 @@
+regime,left,right,interaction
+nyc_taxi,missing_measures,stale_timestamps,0.01896184759640837
+nyc_taxi,value_noise,duplicate_facts,0.017280800797157353
+nyc_taxi,missing_measures,orphan_foreign_keys,0.008088472743187768
+nyc_taxi,missing_measures,dimension_drift,0.0006408504572950214
+nyc_taxi,orphan_foreign_keys,stale_timestamps,-2.6599093298311044e-18
+nyc_taxi,stale_timestamps,dimension_drift,-1.1102230246251568e-17
+nyc_taxi,value_noise,dimension_drift,-0.0021731568847164684
+nyc_taxi,value_noise,orphan_foreign_keys,-0.007611810056072367
+nyc_taxi,orphan_foreign_keys,duplicate_facts,-0.015817735454982277
+nyc_taxi,orphan_foreign_keys,dimension_drift,-0.0164372477004054
+nyc_taxi,value_noise,stale_timestamps,-0.017572029686319563
+nyc_taxi,dimension_drift,duplicate_facts,-0.01971605261001673
+nyc_taxi,stale_timestamps,duplicate_facts,-0.024858694014501463
+nyc_taxi,missing_measures,value_noise,-0.03531977114744122
+nyc_taxi,missing_measures,duplicate_facts,-0.05615073697300066
