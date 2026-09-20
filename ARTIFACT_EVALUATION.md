@@ -32,7 +32,7 @@ powershell -ExecutionPolicy Bypass -File scripts\build_icde_submission.ps1
 | Equal 10% prevalence produces population-specific accounts | `relational_attributions.csv`, `nyc_attributions.csv` | compare top mechanisms and intervals |
 | Query priorities reverse across joins, rollups, counts, and averages | `query_attributions.csv`, `nyc_query_attributions.csv` | group by query and select maximum debt |
 | Interactions reach 0.0590 on SQL and 0.0203 on ML | relational/ML `interactions.csv` | maximum absolute `interaction` |
-| Shapley-first repair is not the full-context oracle in three generated populations | `relational_summary.csv` | compare `shapley_choice` and `oracle_choice` |
+| Shapley-first repair is not the current-state oracle in three generated populations | `relational_summary.csv` | compare `shapley_choice` and `oracle_choice` |
 | Shapley-first removal increases current loss in Uniform and Seasonal | `relational_summary.csv` | `shapley_gain < 0` |
 | NYC dimension drift accounts for 0.0956 [0.0845, 0.1073] | `nyc_attributions.csv` | inspect point and bootstrap interval |
 | At 12 mechanisms, 64 permutations achieve 95.8% top-one recovery while evaluating 12.8% of the surface | `sampling_scalability_m12.csv` | group 400 trials at `permutations=64` |

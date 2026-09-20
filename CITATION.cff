@@ -2,11 +2,13 @@ cff-version: 1.2.0
 message: "If you use QuaRM, please cite the software and accompanying paper."
 title: "QuaRM: Accounting for Data-Quality Debt Across Interacting Defects and Analytical Workloads"
 type: software
-version: 0.1.0
-date-released: 2026-08-07
+version: 0.2.0
+date-released: 2026-08-09
 authors:
-  - family-names: "Anonymous"
-    given-names: "Authors"
-# Replace the placeholder above with every publication author and ORCID before
-# creating the public ICDE artifact release.
+  - family-names: "Martinez-Gil"
+    given-names: "Jorge"
+    affiliation: "Software Competence Center Hagenberg GmbH"
+    email: "jorge.martinez-gil@scch.at"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"  # add before the public release
+# Add every coauthor and ORCID before creating the public ICDE artifact release.
 license: MIT

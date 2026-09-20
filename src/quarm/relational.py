@@ -38,6 +38,7 @@ class RelationalStudyResult:
     repeats: int
     master_seed: int
     workload: tuple[str, ...]
+    query_weights: tuple[tuple[str, float], ...] = ()
 
 
 class RelationalCorruption(Protocol):
@@ -374,13 +375,44 @@ def query_answer_loss(reference: pd.DataFrame, observed: pd.DataFrame, query: Qu
     return float(np.mean(errors))
 
 
-def workload_risk(reference_answers: dict[str, pd.DataFrame], observed_answers: dict[str, pd.DataFrame], workload=None) -> tuple[float, dict[str, float]]:
+def normalize_query_weights(
+    workload: tuple[QuerySpec, ...], weights: dict[str, float] | None
+) -> dict[str, float]:
+    """Validate and normalize a declared query-weight policy.
+
+    Equal weights are the default governance policy; any bounded nonnegative
+    policy over the same query names is admissible once declared up front.
+    """
+    names = [query.name for query in workload]
+    if weights is None:
+        return {name: 1.0 / len(names) for name in names}
+    unknown = set(weights) - set(names)
+    if unknown:
+        raise ValueError(f"weights refer to unknown queries: {sorted(unknown)}")
+    resolved = {name: float(weights.get(name, 0.0)) for name in names}
+    if any(value < 0 for value in resolved.values()):
+        raise ValueError("query weights must be nonnegative")
+    total = sum(resolved.values())
+    if total <= 0:
+        raise ValueError("query weights must have a positive sum")
+    return {name: value / total for name, value in resolved.items()}
+
+
+def workload_risk(
+    reference_answers: dict[str, pd.DataFrame],
+    observed_answers: dict[str, pd.DataFrame],
+    workload=None,
+    *,
+    weights: dict[str, float] | None = None,
+) -> tuple[float, dict[str, float]]:
     workload = analytical_workload() if workload is None else workload
     losses = {
         query.name: query_answer_loss(reference_answers[query.name], observed_answers[query.name], query)
         for query in workload
     }
-    return float(np.mean(list(losses.values()))), losses
+    resolved = normalize_query_weights(workload, weights)
+    risk = float(sum(resolved[name] * loss for name, loss in losses.items()))
+    return risk, losses
 
 
 def _channel_seed(master_seed: int, repeat: int, channel_name: str) -> int:
@@ -414,6 +446,7 @@ def evaluate_relational_surface(
     severity: float = 0.10,
     repeats: int = 10,
     master_seed: int = 2027,
+    query_weights: dict[str, float] | None = None,
 ) -> RelationalStudyResult:
     if repeats < 1:
         raise ValueError("at least one repeat is required")
@@ -422,6 +455,7 @@ def evaluate_relational_surface(
     names = tuple(channel.name for channel in channels)
     lookup = {channel.name: channel for channel in channels}
     workload = analytical_workload()
+    resolved_weights = normalize_query_weights(workload, query_weights)
     reference = execute_workload(schema, workload)
     rows = []
     for repeat in range(repeats):
@@ -432,7 +466,7 @@ def evaluate_relational_surface(
                     schema, selected, severity, master_seed, repeat
                 )
                 answers = execute_workload(corrupted, workload)
-                risk, query_losses = workload_risk(reference, answers, workload)
+                risk, query_losses = workload_risk(reference, answers, workload, weights=query_weights)
             else:
                 diagnostics = {}
                 query_losses = {query.name: 0.0 for query in workload}
@@ -450,5 +484,11 @@ def evaluate_relational_surface(
                 }
             )
     return RelationalStudyResult(
-        pd.DataFrame(rows), names, severity, repeats, master_seed, tuple(query.name for query in workload)
+        pd.DataFrame(rows),
+        names,
+        severity,
+        repeats,
+        master_seed,
+        tuple(query.name for query in workload),
+        tuple(sorted(resolved_weights.items())),
     )

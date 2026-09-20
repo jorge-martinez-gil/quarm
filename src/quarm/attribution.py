@@ -1,4 +1,12 @@
-"""Exact Shapley quality-debt attribution, interactions, and uncertainty."""
+"""Exact Shapley quality-debt attribution, interactions, and uncertainty.
+
+This module computes every estimand the manuscript reports from one complete
+coalition table: exact Shapley debts, pairwise Shapley interactions, singleton
+stress effects, current-state repair gains, and normalized Banzhaf comparators.
+The bootstrap is paired at the repeat level and vectorized: each exact Shapley
+allocation is a single matrix product against a precomputed weight matrix, so
+thousands of bootstrap draws cost about as much as one Python-loop allocation.
+"""
 
 from __future__ import annotations
 
@@ -16,11 +24,25 @@ Coalition = frozenset[str]
 
 @dataclass(frozen=True)
 class AttributionResult:
+    """Every estimand derived from one paired coalition study.
+
+    `estimates` carries, per mechanism, the Shapley debt with paired-bootstrap
+    intervals plus the singleton effect, the current-state repair gain with its
+    own paired interval, and the normalized Banzhaf comparator. The scalar
+    fields preserve the accounting audit trail: `efficiency_residual` must be
+    zero to floating-point precision, while `banzhaf_residual` is reported
+    rather than renormalized because Banzhaf is not an efficient allocation.
+    """
+
     estimates: pd.DataFrame
     interactions: pd.DataFrame
     total_debt: float
     efficiency_residual: float
     coalition_means: dict[Coalition, float]
+    singletons: dict[str, float]
+    gains: dict[str, float]
+    banzhaf: dict[str, float]
+    banzhaf_residual: float
 
 
 def coalition_key(members: Coalition | set[str] | tuple[str, ...]) -> str:
@@ -95,6 +117,42 @@ def shapley_interactions(
     return result
 
 
+def shapley_weight_matrix(players: tuple[str, ...], columns: list[Coalition]) -> np.ndarray:
+    """Return the linear map from coalition values to exact Shapley values.
+
+    Row i holds the signed factorial weights so that `matrix @ values` equals
+    the Shapley allocation for any complete game laid out in `columns` order.
+    The map exists because the Shapley value is linear in the game; it lets a
+    paired bootstrap recompute thousands of allocations as one matrix product.
+    """
+    m = len(players)
+    denom = factorial(m)
+    index = {player: position for position, player in enumerate(players)}
+    matrix = np.zeros((m, len(columns)), dtype=float)
+    for column, coalition in enumerate(columns):
+        size = len(coalition)
+        inside = factorial(size - 1) * factorial(m - size) / denom if size else 0.0
+        outside = factorial(size) * factorial(m - size - 1) / denom if size < m else 0.0
+        for player in players:
+            if player in coalition:
+                matrix[index[player], column] = inside
+            else:
+                matrix[index[player], column] = -outside
+    return matrix
+
+
+def banzhaf_weight_matrix(players: tuple[str, ...], columns: list[Coalition]) -> np.ndarray:
+    """Return the linear map from coalition values to normalized Banzhaf values."""
+    m = len(players)
+    weight = 1.0 / (2 ** (m - 1)) if m else 0.0
+    index = {player: position for position, player in enumerate(players)}
+    matrix = np.zeros((m, len(columns)), dtype=float)
+    for column, coalition in enumerate(columns):
+        for player in players:
+            matrix[index[player], column] = weight if player in coalition else -weight
+    return matrix
+
+
 def concentration_radius(n_channels: int, repeats: int, delta: float = 0.05) -> float:
     """Conservative simultaneous Hoeffding radius for bounded [0,1] loss debt."""
     if n_channels < 1 or repeats < 1 or not 0 < delta < 1:
@@ -115,6 +173,10 @@ def attribute_quality_debt(
 
     `observations` must contain repeat, coalition (a `frozenset`), and loss.
     Bootstrap resampling occurs at the repeat level, preserving all pairing.
+    The result separates three questions that a single ranking conflates:
+    the Shapley debt (average-order accounting), the singleton effect
+    (one-defect stress testing), and the current-state gain (removal from the
+    fully defective joint state). Their disagreement certifies non-additivity.
     """
     required = {"repeat", "coalition", "loss"}
     if not required.issubset(observations.columns):
@@ -137,16 +199,32 @@ def attribute_quality_debt(
     point = shapley_values(mean_values, players)
     interactions = shapley_interactions(mean_values, players)
 
-    rng = np.random.default_rng(seed)
-    boot = np.empty((bootstrap_samples, len(players)), dtype=float)
-    matrix = pivot.to_numpy()
+    full = frozenset(players)
+    empty: Coalition = frozenset()
+    singletons = {p: mean_values[frozenset({p})] - mean_values[empty] for p in players}
+    gains = {p: mean_values[full] - mean_values[full - {p}] for p in players}
+
     columns = list(pivot.columns)
+    column_index = {coalition: position for position, coalition in enumerate(columns)}
+    shapley_map = shapley_weight_matrix(players, columns)
+    banzhaf_map = banzhaf_weight_matrix(players, columns)
+    means_vector = np.array([mean_values[c] for c in columns])
+    banzhaf_point = banzhaf_map @ means_vector
+    banzhaf = dict(zip(players, map(float, banzhaf_point), strict=True))
+    total_debt = mean_values[full] - mean_values[empty]
+    banzhaf_residual = float(banzhaf_point.sum() - total_debt)
+
+    rng = np.random.default_rng(seed)
+    matrix = pivot.to_numpy()
+    draws = np.empty((bootstrap_samples, len(repeats)), dtype=np.int64)
     for b in range(bootstrap_samples):
-        rows = rng.integers(0, len(repeats), size=len(repeats))
-        sampled = matrix[rows].mean(axis=0)
-        values = dict(zip(columns, sampled, strict=True))
-        draw = shapley_values(values, players)
-        boot[b] = [draw[p] for p in players]
+        draws[b] = rng.integers(0, len(repeats), size=len(repeats))
+    sampled_means = matrix[draws].mean(axis=1)
+    boot = sampled_means @ shapley_map.T
+    full_column = column_index[full]
+    gain_boot = np.column_stack(
+        [sampled_means[:, full_column] - sampled_means[:, column_index[full - {p}]] for p in players]
+    )
 
     alpha = (1.0 - confidence) / 2.0
     records = []
@@ -159,13 +237,26 @@ def attribute_quality_debt(
                 "ci_high": float(np.quantile(boot[:, idx], 1 - alpha)),
                 "probability_harmful": float(np.mean(boot[:, idx] > 0)),
                 "rank_1_probability": float(np.mean(np.argmax(boot, axis=1) == idx)),
+                "singleton": singletons[player],
+                "current_gain": gains[player],
+                "gain_ci_low": float(np.quantile(gain_boot[:, idx], alpha)),
+                "gain_ci_high": float(np.quantile(gain_boot[:, idx], 1 - alpha)),
+                "banzhaf": banzhaf[player],
             }
         )
     estimates = pd.DataFrame(records).sort_values("debt", ascending=False, ignore_index=True)
     interaction_frame = pd.DataFrame(
         [{"left": a, "right": b, "interaction": v} for (a, b), v in interactions.items()]
     ).sort_values("interaction", ascending=False, ignore_index=True)
-    total_debt = mean_values[frozenset(players)] - mean_values[frozenset()]
     residual = sum(point.values()) - total_debt
-    return AttributionResult(estimates, interaction_frame, total_debt, float(residual), mean_values)
-
+    return AttributionResult(
+        estimates,
+        interaction_frame,
+        total_debt,
+        float(residual),
+        mean_values,
+        singletons,
+        gains,
+        banzhaf,
+        banzhaf_residual,
+    )

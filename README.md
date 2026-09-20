@@ -10,9 +10,10 @@ The central design choice is deliberate: QuaRM does **not** pretend that complet
 - Six relational mechanisms for missing measures, value noise, orphan foreign keys, stale timestamps, dimension drift, and duplicate facts.
 - Eight analytical DuckDB queries over controlled star schemas and an official NYC TLC snapshot loader.
 - Exact full-factorial risk-surface estimation with paired train/test splits and channel-specific random streams.
-- Exact Shapley quality-debt attribution and pairwise Shapley interactions.
-- Cached permutation-Shapley estimation with standard errors, coalition coverage, and a simultaneous finite-sample radius.
-- Full-context repair marginals kept distinct from average Shapley accounting.
+- Exact Shapley quality-debt attribution and pairwise Shapley interactions, vectorized behind precomputed weight matrices so thousands of bootstrap allocations cost one matrix product.
+- Cached permutation-Shapley estimation with standard errors, coalition coverage, a simultaneous finite-sample radius, and an optional reversed-pair (antithetic) mode that cancels the additive component of the game exactly.
+- Current-state repair marginals, singleton stress effects, and normalized Banzhaf comparators reported beside average Shapley accounting, each kept distinct.
+- Declared query-weight policies for the relational workload risk; equal weights remain the default.
 - Nonparametric paired bootstrap intervals and ranking probabilities.
 - A CSV-oriented CLI, ML confirmation study, tests, figures, raw observations, provenance manifests, and an IEEEtran ICDE 2027 submission package.
 - Honest boundaries: results are conditional on the chosen task, learner, clean evaluation set, channels, and severities.

@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quarm"
-version = "0.1.0"
+version = "0.2.0"
 description = "Counterfactual risk surfaces for interaction-aware data-quality measurement"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-authors = [{name = "Anonymous Authors"}]
+authors = [{name = "Jorge Martinez-Gil", email = "jorge.martinez-gil@scch.at"}]
 keywords = ["data quality", "data-centric AI", "Shapley value", "robustness", "auditing"]
 classifiers = [
   "Development Status :: 3 - Alpha",
